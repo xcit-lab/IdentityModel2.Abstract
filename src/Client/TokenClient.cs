@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Modified by xCIT (https://www.xcit.org)
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -11,16 +15,26 @@ namespace IdentityModel.Client
     /// </summary>
     public class TokenClient
     {
-        private readonly HttpClient _client;
+        private readonly AbstractHttpClient _client;
         private readonly TokenClientOptions _options;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenClient"/> class.
-        /// </summary>
-        /// <param name="client">The client.</param>
-        /// <param name="options">The options.</param>
-        /// <exception cref="ArgumentNullException">client</exception>
-        public TokenClient(HttpClient client, TokenClientOptions options)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TokenClient"/> class.
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="options">The options.</param>
+		/// <exception cref="ArgumentNullException">client</exception>
+		public TokenClient(HttpClient client, TokenClientOptions options)
+			: this(new DefaultHttpClient(client, false), options)
+		{ }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TokenClient"/> class.
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="options">The options.</param>
+		/// <exception cref="ArgumentNullException">client</exception>
+		public TokenClient(AbstractHttpClient client, TokenClientOptions options)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _options = options ?? new TokenClientOptions();

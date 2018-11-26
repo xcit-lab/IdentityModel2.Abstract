@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Modified by xCIT (https://www.xcit.org)
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.Internal;
@@ -17,7 +18,7 @@ namespace IdentityModel.Client
         private AsyncLazy<DiscoveryDocumentResponse> _lazyResponse;
 
         private readonly DiscoveryPolicy _policy;
-        private readonly Func<HttpClient> _getHttpClient;
+        private readonly Func<AbstractHttpClient> _getHttpClient;
         private readonly string _authority;
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace IdentityModel.Client
         {
             _authority = authority;
             _policy = policy ?? new DiscoveryPolicy();
-            _getHttpClient = () => new HttpClient();
+            _getHttpClient = () => new DefaultHttpClient();
         }
 
         /// <summary>
@@ -38,17 +39,37 @@ namespace IdentityModel.Client
         /// <param name="authority">Base address or discovery document endpoint.</param>
         /// <param name="httpClientFunc">The HTTP client function.</param>
         /// <param name="policy">The policy.</param>
-        public DiscoveryCache(string authority, Func<HttpClient> httpClientFunc, DiscoveryPolicy policy = null)
+        public DiscoveryCache(string authority, Func<AbstractHttpClient> httpClientFunc, DiscoveryPolicy policy = null)
         {
             _authority = authority;
             _policy = policy ?? new DiscoveryPolicy();
             _getHttpClient = httpClientFunc ?? throw new ArgumentNullException(nameof(httpClientFunc));
         }
 
-        /// <summary>
-        /// Frequency to refresh discovery document. Defaults to 24 hours.
-        /// </summary>
-        public TimeSpan CacheDuration { get; set; } = TimeSpan.FromHours(24);
+		/// <summary>
+		/// Initialize instance of DiscoveryCache with passed authority.
+		/// </summary>
+		/// <param name="authority">Base address or discovery document endpoint.</param>
+		/// <param name="httpClientFunc">The HTTP client function.</param>
+		/// <param name="policy">The policy.</param>
+		public DiscoveryCache(string authority, Func<HttpClient> httpClientFunc, DiscoveryPolicy policy = null)
+		{
+			_authority = authority;
+			_policy = policy ?? new DiscoveryPolicy();
+			if (httpClientFunc != null)
+			{
+				_getHttpClient = () => new DefaultHttpClient(httpClientFunc(), true);
+			}
+			else
+			{
+				throw new ArgumentNullException(nameof(httpClientFunc));
+			}
+		}
+
+		/// <summary>
+		/// Frequency to refresh discovery document. Defaults to 24 hours.
+		/// </summary>
+		public TimeSpan CacheDuration { get; set; } = TimeSpan.FromHours(24);
 
         /// <summary>
         /// Get the DiscoveryResponse either from cache or from discovery endpoint.

@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Modified by xCIT (https://www.xcit.org)
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Net.Http;
@@ -17,7 +18,7 @@ namespace IdentityModel.Client
         /// <param name="client">The client.</param>
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
-        public static void SetBasicAuthentication(this HttpClient client, string userName, string password)
+        public static void SetBasicAuthentication(this AbstractHttpClient client, string userName, string password)
         {
             client.DefaultRequestHeaders.Authorization = new BasicAuthenticationHeaderValue(userName, password);
         }
@@ -28,7 +29,7 @@ namespace IdentityModel.Client
         /// <param name="client">The client.</param>
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
-        public static void SetBasicAuthenticationOAuth(this HttpClient client, string userName, string password)
+        public static void SetBasicAuthenticationOAuth(this AbstractHttpClient client, string userName, string password)
         {
             client.DefaultRequestHeaders.Authorization = new BasicAuthenticationOAuthHeaderValue(userName, password);
         }
@@ -39,7 +40,7 @@ namespace IdentityModel.Client
         /// <param name="client">The client.</param>
         /// <param name="scheme">The scheme.</param>
         /// <param name="token">The token.</param>
-        public static void SetToken(this HttpClient client, string scheme, string token)
+        public static void SetToken(this AbstractHttpClient client, string scheme, string token)
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme, token);
         }
@@ -49,7 +50,7 @@ namespace IdentityModel.Client
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="token">The token.</param>
-        public static void SetBearerToken(this HttpClient client, string token)
+        public static void SetBearerToken(this AbstractHttpClient client, string token)
         {
             client.SetToken("Bearer", token);
         }

@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Modified by xCIT (https://www.xcit.org)
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.Internal;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace IdentityModel.Client
 {
     /// <summary>
-    /// HttpClient extentions for OIDC discovery
+    /// AbstractHttpClient extentions for OIDC discovery
     /// </summary>
     public static class HttpClientDiscoveryExtensions
     {
@@ -22,19 +23,34 @@ namespace IdentityModel.Client
         /// <param name="address">The address.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(this HttpClient client, string address, CancellationToken cancellationToken = default)
+        public static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(this AbstractHttpClient client, string address, CancellationToken cancellationToken = default)
         {
             return await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest { Address = address }, cancellationToken);
         }
 
-        /// <summary>
-        /// Sends a discovery document request
-        /// </summary>
-        /// <param name="client">The client.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        public static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(this HttpClient client, DiscoveryDocumentRequest request = null, CancellationToken cancellationToken = default)
+		/// <summary>
+		/// Sends a discovery document request
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="address">The address.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
+		public static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(this HttpClient client, string address, CancellationToken cancellationToken = default)
+		{
+			using (DefaultHttpClient c = new DefaultHttpClient(client, false))
+			{
+				return await c.GetDiscoveryDocumentAsync(address, cancellationToken);
+			}
+		}
+
+		/// <summary>
+		/// Sends a discovery document request
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
+		public static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(this AbstractHttpClient client, DiscoveryDocumentRequest request = null, CancellationToken cancellationToken = default)
         {
             if (request == null) request = new DiscoveryDocumentRequest();
 
@@ -121,5 +137,20 @@ namespace IdentityModel.Client
                 return ProtocolResponse.FromException<DiscoveryDocumentResponse>(ex, $"Error connecting to {url}. {ex.Message}.");
             }
         }
-    }
+
+		/// <summary>
+		/// Sends a discovery document request
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
+		public static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(this HttpClient client, DiscoveryDocumentRequest request = null, CancellationToken cancellationToken = default)
+		{
+			using (DefaultHttpClient c = new DefaultHttpClient(client, false))
+			{
+				return await c.GetDiscoveryDocumentAsync(request, cancellationToken);
+			}
+		}
+	}
 }
