@@ -18,7 +18,7 @@ namespace IdentityModel.Client
 		/// Gets or sets the base address of Uniform Resource Identifier (URI) of the Internet resource 
 		/// used when sending requests.
 		/// </summary>
-		public abstract Uri BaseAddress { get; set; }
+		public virtual Uri BaseAddress { get; set; }
 
 		/// <summary>
 		/// Gets the headers which should be sent with each request.
